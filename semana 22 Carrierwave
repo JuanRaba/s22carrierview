@@ -1,0 +1,78 @@
+semana 22 Carrierwave
+subir archivos, paperclip es otra gema
+
+2 setup proyecto
+https://github.com/JuanRaba/s22carrierview
+rails g scaffold photo name image description:text
+
+3 como funciona Carrierwave
+en el modelo photo es string, el uploder lo manejará 
+file_field en el form
+
+4 Crear y montar el uploder
+gem 'carrierwave' #cuidado en el video lo pone en linea x encima de rails
+rails g uploader image
+  app/uploaders/image_uploader.rb
+model photo montamos en atrib image el ImageUploader q creamos
+class Photo < ApplicationRecord
+  mount_uploader :image, ImageUploader
+end
+
+5 Subiendo el primer archivo
+views/photos/_form
+    <%= form.file_field :image %>
+la imagen se sube a public
+/uploads/photo/image/1/bg-callout.jpg
+en show
+  <%= image_tag @photo.image.url, size: "64x64" %>
+
+6 fallback
+app/uploaders/image_uploader.rb 
+# Provide a default URL as a default if there hasn't been a file uploaded:
+def default_url(*args)
+
+7 imagen de una url remota
+  <div class="field">
+    <%= form.label :image %>
+    <%= form.file_field :image, id: :photo_image %>
+    <%= form.text_field :remote_image_url, id: :remote_photo_image %>
+  </div>
+
+8 subiendo archivospor consola
+con imagen en raiz del proyecto
+rails c
+Photo.new(image: File.open('gato.jpg')).save
+usar en seeds.rb
+
+9 transformando fotos con minimagik
+gema transforma imagenes
+sudo apt-get install imagemagick
+gem 'mini_magik' 
+class ImageUploader < CarrierWave::Uploader::Base
+  include CarrierWave::MiniMagick
+  process resize_to_fit: [400, 400]
+https://www.rubydoc.info/gems/carrierwave/CarrierWave/MiniMagick
+
+10 Generando versiones de fotos
+# Create different versions of your uploaded files:
+version :thumb do
+  process resize_to_fit: [50, 50]
+end
+<%= image_tag @photo.image.thumb.url %>
+
+11 fallback versiones y asset pipeline
+Photo.all.each {|photo| photo.image.recreate_versions! if photo.image.present?}
+al fallback ya no le afecta no tener thumb
+:s agrega al asset_path los png y la carpeta donde estaba
+ #   "/images/fallback/" + [version_name, "default.png"].compact.join('_')
+  
+12 quiz
+13 Enctype
+si usamos form_tag necesitaremos
+form enctype="multipart/form-data" => para no encodear los datos y asi poder leer la foto q suben
+
+14 Amazon y S3
+subir auto a amazon, xq al subir a heroku se crea un proyecto desde cero
+amazon aws
+
+...tutorial amazon
