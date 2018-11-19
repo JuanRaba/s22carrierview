@@ -6,6 +6,7 @@ ruby '2.4.1'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'carrierwave'
 gem 'rails', '~> 5.2.1'
+gem 'mini_magick'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use Puma as the app server
